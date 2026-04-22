@@ -533,6 +533,134 @@ body {
   color: #222;
 }
 
+.kabco-year-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.kabco-year-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  user-select: none;
+  box-sizing: border-box;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.kabco-year-chip:hover {
+  border-color: #b8c7d8;
+  background: #fafcff;
+}
+
+.kabco-year-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.kabco-year-chip-box {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #9aa3ad;
+  border-radius: 3px;
+  background: #fff;
+  flex: 0 0 14px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.kabco-year-chip input:checked + .kabco-year-chip-box {
+  background: #1d90e4;
+  border-color: #1d90e4;
+}
+
+.kabco-year-chip input:checked + .kabco-year-chip-box::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.kabco-year-chip-text {
+  font-weight: 600;
+  font-size: 11px;
+  color: #222;
+}
+
+.kabco-year-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.year-btn {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  width: 100%;
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #cfcfcf;
+  background: #fff;
+  color: #222;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    color 0.16s ease;
+}
+
+.year-btn:hover {
+  background: #f7f7f7;
+}
+
+.year-btn-clear {
+  border-color: #1d90e4;
+  color: #1d90e4;
+  background: #fff;
+}
+
+.year-btn-clear:hover {
+  background: #f4f9fe;
+}
+
+.year-btn-select {
+  border-color: #4a90e2;
+  background: #4a90e2;
+  color: #fff;
+}
+
+.year-btn-select:hover {
+  background: #3c82d5;
+  border-color: #3c82d5;
+}
+
+.kabco-year-hint {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #666;
+  line-height: 1.25;
+}
+
 .maplibregl-popup {
   max-width: 315px !important;
 }

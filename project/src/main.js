@@ -55,7 +55,7 @@ let currentTimeIndex = -1; // -1 = all crashes
 let allCrashFeatures = [];
 let currentManner = "All";
 let currentMode = "All";
-let currentYear = "All";
+let selectedYears = new Set();
 
 function parseCollisionTime(value) {
   if (value === null || value === undefined) return null;
@@ -125,8 +125,13 @@ function getYears() {
 }
 
 function getYearFilter() {
-  if (!currentYear || currentYear === "All") return null;
-  return ["==", ["to-string", ["get", "CollisionYear"]], String(currentYear)];
+  if (!selectedYears || selectedYears.size === 0) return null;
+
+  return [
+    "in",
+    ["to-string", ["get", "CollisionYear"]],
+    ["literal", Array.from(selectedYears)],
+  ];
 }
 
 function getKabcoItem(id) {
@@ -149,9 +154,9 @@ function getFilteredFeatures() {
       if (props.Mode !== currentMode) return false;
     }
 
-    if (currentYear !== "All") {
+    if (selectedYears.size > 0) {
       const year = props.CollisionYear?.toString().trim() || "";
-      if (year !== String(currentYear)) return false;
+      if (!selectedYears.has(year)) return false;
     }
 
     if (currentTimeIndex === -1) return true;
@@ -217,6 +222,44 @@ function updateCounts() {
       countEl.textContent = `(${count.toLocaleString()})`;
     }
   });
+}
+
+function resetAllFilters() {
+  // reset state
+  currentManner = "All";
+  currentMode = "All";
+  currentTimeIndex = -1;
+  selectedYears.clear();
+
+  kabcoItems.forEach((item) => {
+    item.visible = true;
+  });
+
+  // reset KABCO checkboxes
+  document.querySelectorAll(".kabco-toggle").forEach((cb) => {
+    cb.checked = true;
+  });
+
+  // reset dropdowns
+  const mannerSelect = document.querySelector("#manner-filter");
+  if (mannerSelect) mannerSelect.value = "All";
+
+  const modeSelect = document.querySelector("#mode-filter");
+  if (modeSelect) modeSelect.value = "All";
+
+  // reset year checkboxes
+  document.querySelectorAll(".year-toggle").forEach((cb) => {
+    cb.checked = false;
+  });
+
+  // reset time slider + label
+  const slider = document.querySelector(".slider-range");
+  const sliderLabel = document.querySelector(".slider-label");
+
+  if (slider) slider.value = 0;
+  if (sliderLabel) sliderLabel.textContent = "All Crashes";
+
+  filterBy();
 }
 
 function buildLegend() {
@@ -343,36 +386,65 @@ function buildLegend() {
   const yearWrap = document.createElement("div");
   yearWrap.className = "kabco-filter-group";
 
-  const yearLabel = document.createElement("label");
+  const yearLabel = document.createElement("div");
   yearLabel.className = "kabco-filter-label";
   yearLabel.textContent = "Collision Year";
-  yearLabel.setAttribute("for", "year-filter");
+  yearWrap.appendChild(yearLabel);
 
-  const yearSelect = document.createElement("select");
-  yearSelect.className = "kabco-filter-select";
-  yearSelect.id = "year-filter";
-
-  const allYearOption = document.createElement("option");
-  allYearOption.value = "All";
-  allYearOption.textContent = "All Years";
-  yearSelect.appendChild(allYearOption);
+  const yearGrid = document.createElement("div");
+  yearGrid.className = "kabco-year-grid";
 
   getYears().forEach((year) => {
-    const option = document.createElement("option");
-    option.value = year;
-    option.textContent = year;
-    yearSelect.appendChild(option);
+    const row = document.createElement("label");
+    row.className = "kabco-year-chip";
+
+    row.innerHTML = `
+    <input
+      type="checkbox"
+      class="year-toggle"
+      data-year="${year}"
+    >
+    <span class="kabco-year-chip-box"></span>
+    <span class="kabco-year-chip-text">${year}</span>
+  `;
+
+    const checkbox = row.querySelector(".year-toggle");
+    checkbox.checked = selectedYears.has(year);
+
+    checkbox.addEventListener("change", (e) => {
+      const y = e.target.dataset.year;
+
+      if (e.target.checked) {
+        selectedYears.add(y);
+      } else {
+        selectedYears.delete(y);
+      }
+
+      filterBy();
+    });
+
+    yearGrid.appendChild(row);
   });
 
-  yearSelect.value = currentYear;
+  yearWrap.appendChild(yearGrid);
 
-  yearSelect.addEventListener("change", (e) => {
-    currentYear = e.target.value;
-    filterBy();
-  });
+  const yearActions = document.createElement("div");
+  yearActions.className = "kabco-year-actions";
+  yearActions.innerHTML = `
+  <button type="button" class="year-btn year-btn-clear">Clear All Filters</button>
+`;
 
-  yearWrap.appendChild(yearLabel);
-  yearWrap.appendChild(yearSelect);
+  yearActions
+    .querySelector(".year-btn-clear")
+    .addEventListener("click", resetAllFilters);
+
+  yearWrap.appendChild(yearActions);
+
+  const yearHint = document.createElement("div");
+  yearHint.className = "kabco-year-hint";
+  yearHint.textContent = "No years selected = all years";
+  yearWrap.appendChild(yearHint);
+
   panel.appendChild(yearWrap);
 
   document.body.appendChild(panel);
