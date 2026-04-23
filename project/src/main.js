@@ -331,11 +331,6 @@ function buildLegend() {
     });
   });
 
-  const overlayTitle = document.createElement("div");
-  overlayTitle.className = "kabco-legend-subtitle";
-  overlayTitle.textContent = "Map Layers";
-  panel.appendChild(overlayTitle);
-
   const cityRoutesRow = document.createElement("label");
   cityRoutesRow.className = "kabco-legend-row";
   cityRoutesRow.innerHTML = `
