@@ -7,6 +7,10 @@
       "type": "geojson",
       "data": "./data/mask.geojson"
     },
+    "city-routes": {
+      "type": "geojson",
+      "data": "./data/city-routes.geojson"
+    },
     "terrain-rgb": {
       "url": "https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=VR7FKTd6lXA4PKRQVzfY",
       "type": "raster-dem"
@@ -380,6 +384,60 @@
         ],
         ["==", "brunnel", "bridge"]
       ]
+    },
+    {
+      "id": "city routes casing",
+      "type": "line",
+      "source": "city-routes",
+      "layout": {
+        "visibility": "visible",
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#768c6e",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10,
+          4,
+          12,
+          4.8,
+          14,
+          5.5,
+          16,
+          6
+        ],
+        "line-opacity": 1
+      }
+    },
+    {
+      "id": "city routes",
+      "type": "line",
+      "source": "city-routes",
+      "layout": {
+        "visibility": "visible",
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#293706",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10,
+          2,
+          12,
+          2.8,
+          14,
+          3.5,
+          16,
+          4
+        ],
+        "line-opacity": 0.5
+      }
     },
     {
       "id": "elliott-boundary-glow-light",

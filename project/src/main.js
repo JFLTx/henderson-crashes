@@ -55,6 +55,7 @@ let currentTimeIndex = -1; // -1 = all crashes
 let allCrashFeatures = [];
 let currentManner = "All";
 let currentMode = "All";
+let cityRoutesVisible = true;
 let selectedYears = new Set();
 
 function parseCollisionTime(value) {
@@ -224,6 +225,24 @@ function updateCounts() {
   });
 }
 
+function setCityRoutesVisibility(isVisible) {
+  cityRoutesVisible = isVisible;
+
+  const visibility = isVisible ? "visible" : "none";
+  const cityRouteLayerIds = ["city routes casing", "city routes"];
+
+  cityRouteLayerIds.forEach((layerId) => {
+    if (map.getLayer(layerId)) {
+      map.setLayoutProperty(layerId, "visibility", visibility);
+    }
+  });
+}
+
+function syncCityRoutesToggleUI() {
+  const toggle = document.querySelector("#city-routes-toggle");
+  if (toggle) toggle.checked = cityRoutesVisible;
+}
+
 function resetAllFilters() {
   // reset state
   currentManner = "All";
@@ -258,6 +277,9 @@ function resetAllFilters() {
 
   if (slider) slider.value = 0;
   if (sliderLabel) sliderLabel.textContent = "All Crashes";
+
+  setCityRoutesVisibility(true);
+  syncCityRoutesToggleUI();
 
   filterBy();
 }
@@ -308,6 +330,40 @@ function buildLegend() {
       }
     });
   });
+
+  const overlayTitle = document.createElement("div");
+  overlayTitle.className = "kabco-legend-subtitle";
+  overlayTitle.textContent = "Map Layers";
+  panel.appendChild(overlayTitle);
+
+  const cityRoutesRow = document.createElement("label");
+  cityRoutesRow.className = "kabco-legend-row";
+  cityRoutesRow.innerHTML = `
+  <input
+    type="checkbox"
+    id="city-routes-toggle"
+    ${cityRoutesVisible ? "checked" : ""}
+  >
+  <span
+    class="kabco-legend-swatch"
+    style="
+      width:30px;
+      height:3px;
+      border-radius:3px;
+      background:#293706;
+      border:1px solid #768c6e;
+    "
+  ></span>
+  <span class="kabco-legend-label">City Routes</span>
+`;
+
+  panel.appendChild(cityRoutesRow);
+
+  cityRoutesRow
+    .querySelector("#city-routes-toggle")
+    .addEventListener("change", (e) => {
+      setCityRoutesVisibility(e.target.checked);
+    });
 
   const filterTitle = document.createElement("div");
   filterTitle.className = "kabco-legend-subtitle";
